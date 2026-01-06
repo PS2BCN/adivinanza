@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultor Fiscal & Adivinanza 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .active-tab { border-bottom: 4px solid #3b82f6; color: #1e293b; font-weight: bold; background: #f1f5f9; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans">
+
+    <div class="max-w-5xl mx-auto py-8 px-4">
+        <header class="bg-slate-900 text-white p-6 rounded-t-xl shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">Consultor Fiscal & Adivinanza</h1>
+                <p class="text-slate-400 text-sm italic">Gestión de Patrimonio y Entretenimiento</p>
+            </div>
+            
+            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-600 flex flex-col items-center">
+                <span class="text-[10px] uppercase tracking-widest text-blue-400 mb-2 font-black text-center">Hilo Musical (Pistas 1-6)</span>
+                <div class="flex items-center gap-4">
+                    <select id="playlist" onchange="changeTrack()" class="bg-slate-900 text-white text-xs border border-slate-500 rounded-lg p-2 outline-none">
+                        <option value="1.mp3">Pista 01</option>
+                        <option value="2.mp3">Pista 02</option>
+                        <option value="3.mp3">Pista 03</option>
+                        <option value="4.mp3">Pista 04</option>
+                        <option value="5.mp3">Pista 05</option>
+                        <option value="6.mp3">Pista 06</option>
+                    </select>
+                    <button onclick="togglePlay()" id="playBtn" class="bg-blue-600 hover:bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all shadow-md">▶</button>
+                    <audio id="mainPlayer" onended="nextTrack()"></audio>
+                </div>
+            </div>
+        </header>
+
+        <nav class="bg-white flex shadow-sm border-b">
+            <button onclick="changeTab('simulador')" id="btn-simulador" class="flex-1 py-4 text-slate-500 active-tab">SIMULADOR</button>
+            <button onclick="changeTab('tablas')" id="btn-tablas" class="flex-1 py-4 text-slate-500">NORMATIVA</button>
+            <button onclick="changeTab('juego')" id="btn-juego" class="flex-1 py-4 text-slate-500">JUEGO: ADIVINANZA</button>
+        </nav>
+
+        <main class="bg-white p-6 rounded-b-xl shadow-xl min-h-[500px]">
+            
+            <div id="simulador" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <h2 class="text-slate-800 font-bold text-sm uppercase">Datos de Patrimonio</h2>
+                        <select id="ccaa" class="w-full border-2 p-3 rounded-xl focus:border-blue-500 outline-none"><option value="Cataluña">Cataluña</option><option value="Madrid">Madrid</option><option value="Andalucía">Andalucía</option><option value="C. Valenciana">C. Valenciana</option><option value="Aragón">Aragón</option><option value="Resto España">Resto España</option></select>
+                        <input type="number" id="viv" placeholder="Vivienda Habitual (€)" class="w-full border-2 p-3 rounded-xl">
+                        <input type="number" id="bien" placeholder="Otros Bienes (€)" class="w-full border-2 p-3 rounded-xl">
+                        <input type="number" id="deu" placeholder="Deudas (€)" class="w-full border-2 p-3 rounded-xl">
+                        <button onclick="calcularTodo()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg uppercase text-sm">Calcular Liquidación</button>
+                    </div>
+                    <div class="flex flex-col">
+                        <div id="area-pdf" class="bg-slate-900 text-green-400 p-6 rounded-2xl font-mono text-[11px] shadow-2xl flex-grow overflow-auto min-h-[300px]">
+                            <div id="resultado-texto">Esperando datos...</div>
+                        </div>
+                        <button id="btn-descarga" onclick="generarPDF()" class="hidden mt-4 bg-emerald-600 text-white font-bold py-3 rounded-xl transition shadow-lg">📄 Descargar PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tablas" class="tab-content">
+                <pre id="info-normativa" class="text-[11px] text-slate-600 font-mono bg-slate-50 p-6 rounded-xl border border-dashed"></pre>
+            </div>
+
+            <div id="juego" class="tab-content">
+                <div class="max-w-md mx-auto text-center space-y-6 bg-slate-50 p-8 rounded-3xl border-2 border-slate-200 shadow-inner">
+                    <h2 class="text-2xl font-black text-slate-800">¿Cuál es el número secreto?</h2>
+                    <p class="text-slate-500 text-sm">He pensado un número del 1 al 100...</p>
+                    
+                    <div id="feedback-juego" class="text-lg font-bold text-blue-600 h-8">¡Suerte!</div>
+                    
+                    <input type="number" id="input-numero" class="w-full text-center text-3xl font-bold p-4 rounded-2xl border-4 border-slate-300 focus:border-blue-500 outline-none" placeholder="?">
+                    
+                    <button onclick="comprobarAdivinanza()" class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition transform active:scale-95 uppercase">
+                        ADIVINAR
+                    </button>
+
+                    <div class="text-left bg-white p-4 rounded-xl border">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-2">Historial de Intentos:</h3>
+                        <div id="historial-juego" class="text-sm font-mono text-slate-600 h-32 overflow-y-auto"></div>
+                    </div>
+                    
+                    <button onclick="reiniciarJuego()" class="text-xs text-slate-400 underline hover:text-slate-600">Reiniciar juego</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // --- JUEGO DE ADIVINANZA (Lógica de tu código integrada) ---
+        let numeroSecreto = Math.floor(Math.random() * 100) + 1;
+        let intentos = 0;
+
+        function comprobarAdivinanza() {
+            const input = document.getElementById('input-numero');
+            const num = parseInt(input.value);
+            const feedback = document.getElementById('feedback-juego');
+            const historial = document.getElementById('historial-juego');
+
+            if (isNaN(num)) return;
+
+            intentos++;
+            let mensaje = "";
+            let color = "text-blue-600";
+
+            if (num < numeroSecreto) {
+                mensaje = "ES MÁS GRANDE ↑";
+                color = "text-orange-500";
+            } else if (num > numeroSecreto) {
+                mensaje = "ES MÁS PEQUEÑO ↓";
+                color = "text-purple-500";
+            } else {
+                mensaje = "¡CONSEGUIDO! 🏆";
+                color = "text-green-600";
+                alert("¡YOU WIN!\nNúmero: " + numeroSecreto + "\nIntentos: " + intentos);
+                reiniciarJuego();
+            }
+
+            feedback.innerText = mensaje;
+            feedback.className = `text-lg font-bold ${color}`;
+            historial.innerHTML = `<div>INTENTO ${intentos}: ${num} (${mensaje})</div>` + historial.innerHTML;
+            input.value = "";
+            input.focus();
+        }
+
+        function reiniciarJuego() {
+            numeroSecreto = Math.floor(Math.random() * 100) + 1;
+            intentos = 0;
+            document.getElementById('historial-juego').innerHTML = "";
+            document.getElementById('feedback-juego').innerText = "¡Nuevo número generado!";
+            document.getElementById('feedback-juego').className = "text-lg font-bold text-blue-600";
+        }
+
+        // --- LÓGICA DE AUDIO (1-6) ---
+        const audio = document.getElementById('mainPlayer');
+        const playlist = document.getElementById('playlist');
+        const playBtn = document.getElementById('playBtn');
+
+        function togglePlay() {
+            if (audio.paused) { if(!audio.src) audio.src = playlist.value; audio.play(); playBtn.innerText = "⏸"; }
+            else { audio.pause(); playBtn.innerText = "▶"; }
+        }
+
+        function changeTrack() { audio.src = playlist.value; audio.play(); playBtn.innerText = "⏸"; }
+        function nextTrack() { 
+            let nextIndex = (playlist.selectedIndex + 1) % playlist.options.length;
+            playlist.selectedIndex = nextIndex; 
+            changeTrack(); 
+        }
+
+        // --- LÓGICA FISCAL ---
+        const ccaa_config
