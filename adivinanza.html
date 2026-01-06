@@ -3,99 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Adivinanza 1000 - NES Edition</title>
+    <title>Juego de Adivinanza - 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        body { font-family: 'Press Start 2P', cursive; background-color: #000; color: #fff; }
-        .pixel-border { border: 4px solid #fff; box-shadow: 5px 5px 0px #ff0000; }
-        input { image-rendering: pixelated; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .history-scroll { scrollbar-width: thin; scrollbar-color: #3b82f6 #f1f5f9; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden">
+<body class="bg-gradient-to-br from-slate-800 to-slate-900 min-h-screen font-sans flex items-center justify-center p-4">
 
-    <h1 class="text-red-600 text-xl text-center mb-6 leading-relaxed">SUPER ADIVINANZA</h1>
-
-    <div class="bg-slate-900 p-4 w-full max-w-sm pixel-border rounded-lg text-center">
-        <p id="intentos" class="text-[10px] mb-4 text-blue-400">INTENTOS: 0</p>
-        
-        <div id="historial" class="bg-black h-32 overflow-y-auto mb-4 p-2 text-[8px] text-green-500 text-left border border-slate-700">
-            --- SISTEMA LISTO ---
+    <div class="max-w-md w-full">
+        <div class="glass p-4 rounded-t-3xl border-b border-slate-200 flex flex-col items-center">
+            <span class="text-[10px] font-black tracking-widest text-slate-500 mb-3 uppercase">Hilo Musical Corporativo</span>
+            <div class="flex items-center gap-3">
+                <select id="playlist" onchange="changeTrack()" class="bg-white border border-slate-300 text-xs rounded-lg p-2 outline-none focus:ring-2 ring-blue-500">
+                    <option value="1.mp3">Pista 1</option>
+                    <option value="2.mp3">Pista 2</option>
+                    <option value="3.mp3">Pista 3</option>
+                    <option value="4.mp3">Pista 4</option>
+                    <option value="5.mp3">Pista 5</option>
+                    <option value="6.mp3">Pista 6</option>
+                </select>
+                <button onclick="togglePlay()" id="playBtn" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-full shadow-lg transition-transform active:scale-90 flex items-center justify-center">▶</button>
+            </div>
+            <audio id="mainPlayer" onended="nextTrack()"></audio>
         </div>
 
-        <input type="number" id="inputNum" placeholder="???" 
-               class="w-full bg-white text-black text-center py-4 text-2xl mb-4 outline-none">
+        <div class="glass p-8 rounded-b-3xl shadow-2xl text-center space-y-6">
+            <h1 class="text-3xl font-black text-slate-800">¡Adivina el Número!</h1>
+            <p class="text-slate-500 text-sm">He pensado un número secreto entre 1 y 100.</p>
 
-        <button onclick="verificar()" 
-                class="w-full bg-red-600 hover:bg-red-500 py-3 text-white text-sm active:translate-y-1 transition-transform">
-            [ START ]
-        </button>
+            <div id="feedback" class="text-xl font-bold text-blue-600 h-8">¿Listo para empezar?</div>
 
-        <p id="pista" class="text-[10px] mt-6 text-yellow-400">ADIVINA DEL 1 AL 1000</p>
+            <div class="relative">
+                <input type="number" id="inputNum" 
+                       class="w-full text-center text-4xl font-black p-4 rounded-2xl border-4 border-slate-200 focus:border-blue-500 focus:ring-0 outline-none transition-all" 
+                       placeholder="?" min="1" max="100">
+            </div>
+
+            <button onclick="comprobar()" 
+                    class="w-full bg-slate-900 hover:bg-blue-600 text-white font-bold py-5 rounded-2xl shadow-xl transition-all transform active:scale-95 uppercase tracking-widest">
+                Comprobar Número
+            </button>
+
+            <div class="text-left mt-6">
+                <span class="text-[10px] font-bold text-slate-400 uppercase ml-2">Historial de Intentos</span>
+                <div id="historial" class="mt-2 bg-slate-50 border border-slate-200 rounded-xl p-4 h-40 overflow-y-auto font-mono text-sm text-slate-600 history-scroll">
+                    </div>
+            </div>
+
+            <button onclick="reiniciar()" class="text-xs text-slate-400 hover:text-blue-500 underline transition-colors">
+                Reiniciar partida
+            </button>
+        </div>
     </div>
-
-    <div class="mt-8 flex flex-col items-center gap-2">
-        <select id="selectMusica" onchange="cambiarMusica()" class="bg-slate-800 text-[8px] p-2 border border-slate-600 outline-none">
-            <option value="1.mp3">PISTA 01</option>
-            <option value="2.mp3">PISTA 02</option>
-            <option value="3.mp3">PISTA 03</option>
-            <option value="4.mp3">PISTA 04</option>
-            <option value="5.mp3">PISTA 05</option>
-            <option value="6.mp3">PISTA 06</option>
-        </select>
-        <p class="text-[8px] text-slate-500 italic">Pulsa START para activar música</p>
-    </div>
-
-    <audio id="bgMusic" loop></audio>
 
     <script>
-        let numeroSecreto = Math.floor(Math.random() * 1000) + 1;
+        // LÓGICA DEL JUEGO
+        let numeroSecreto = Math.floor(Math.random() * 100) + 1;
         let intentos = 0;
-        const audio = document.getElementById('bgMusic');
 
-        function cambiarMusica() {
-            const track = document.getElementById('selectMusica').value;
-            audio.src = track;
-            audio.play().catch(() => console.log("Esperando interacción del usuario"));
-        }
-
-        function verificar() {
+        function comprobar() {
             const input = document.getElementById('inputNum');
-            const num = parseInt(input.value);
-            const pista = document.getElementById('pista');
+            const feedback = document.getElementById('feedback');
             const historial = document.getElementById('historial');
-            const lblIntentos = document.getElementById('intentos');
+            const num = parseInt(input.value);
 
-            // Iniciar música en el primer clic (requisito de navegadores móviles)
-            if (intentos === 0 && !audio.src) {
-                cambiarMusica();
+            if (isNaN(num)) {
+                feedback.innerText = "Escribe un número";
+                return;
             }
-
-            if (isNaN(num)) return;
 
             intentos++;
-            lblIntentos.innerText = `INTENTOS: ${intentos}`;
-
             let mensaje = "";
+            let color = "";
+
             if (num < numeroSecreto) {
-                mensaje = "MAS GRANDE ↑";
-                pista.style.color = "#fbbf24";
+                mensaje = "ES MÁS GRANDE ↑";
+                color = "text-orange-500";
             } else if (num > numeroSecreto) {
-                mensaje = "MAS PEQUEÑO ↓";
-                pista.style.color = "#fbbf24";
+                mensaje = "ES MÁS PEQUEÑO ↓";
+                color = "text-purple-600";
             } else {
-                mensaje = "¡GANASTE! 🎉";
-                pista.style.color = "#22c55e";
-                alert(`¡CONSEGUIDO EN ${intentos} INTENTOS!`);
-                location.reload();
+                // VICTORIA (Tu lógica)
+                feedback.innerText = "¡CONSEGUIDO! 🏆";
+                feedback.className = "text-xl font-bold text-green-600";
+                alert(`¡YOU WIN!\n¡CONSEGUIDO!\nNúmero: ${numeroSecreto}\nIntentos: ${intentos}`);
+                reiniciar();
+                return;
             }
 
-            pista.innerText = mensaje;
-            historial.innerHTML += `INTENTO ${intentos}: ${num} (${mensaje})<br>`;
-            historial.scrollTop = historial.scrollHeight;
+            // Actualizar Feedback y pantalla
+            feedback.innerText = mensaje;
+            feedback.className = `text-xl font-bold ${color}`;
+            
+            // Insertar en historial
+            const nuevoIntento = document.createElement('div');
+            nuevoIntento.className = "border-b border-slate-100 py-1 flex justify-between";
+            nuevoIntento.innerHTML = `<span>INTENTO ${intentos}: <b>${num}</b></span> <span class="text-[10px] opacity-70">${mensaje}</span>`;
+            historial.prepend(nuevoIntento);
+
             input.value = "";
             input.focus();
         }
+
+        function reiniciar() {
+            numeroSecreto = Math.floor(Math.random() * 100) + 1;
+            intentos = 0;
+            document.getElementById('historial').innerHTML = "";
+            document.getElementById('feedback').innerText = "¡Número nuevo generado!";
+            document.getElementById('feedback').className = "text-xl font-bold text-blue-600";
+            document.getElementById('inputNum').value = "";
+        }
+
+        // LÓGICA DE AUDIO
+        const audio = document.getElementById('mainPlayer');
+        const playlist = document.getElementById('playlist');
+        const playBtn = document.getElementById('playBtn');
+
+        function togglePlay() {
+            if (audio.paused) {
+                if(!audio.src) audio.src = playlist.value;
+                audio.play();
+                playBtn.innerText = "⏸";
+            } else {
+                audio.pause();
+                playBtn.innerText = "▶";
+            }
+        }
+
+        function changeTrack() {
+            audio.src = playlist.value;
+            audio.play();
+            playBtn.innerText = "⏸";
+        }
+
+        function nextTrack() {
+            let idx = (playlist.selectedIndex + 1) % playlist.options.length;
+            playlist.selectedIndex = idx;
+            changeTrack();
+        }
+
+        // Permitir pulsar Enter para comprobar
+        document.getElementById('inputNum').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') comprobar();
+        });
     </script>
 </body>
 </html>
