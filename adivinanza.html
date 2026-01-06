@@ -3,103 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultor Fiscal Patrimonio 2026</title>
+    <title>Consultor Fiscal & Adivinanza 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .active-tab { border-bottom: 4px solid #0f172a; color: #0f172a; font-weight: bold; background: #f8fafc; }
-        .music-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .active-tab { border-bottom: 4px solid #3b82f6; color: #1e293b; font-weight: bold; background: #f1f5f9; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen font-sans">
 
-    <div class="max-w-5xl mx-auto py-10 px-4">
-        <header class="bg-slate-900 text-white p-6 rounded-t-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="max-w-5xl mx-auto py-8 px-4">
+        <header class="bg-slate-900 text-white p-6 rounded-t-xl shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
-                <h1 class="text-2xl font-bold">Consultor Fiscal de Patrimonio 2026</h1>
-                <p class="text-slate-400 text-sm">Liquidación Comparativa e Informe PDF</p>
+                <h1 class="text-2xl font-bold tracking-tight">Consultor Fiscal & Adivinanza</h1>
+                <p class="text-slate-400 text-sm italic">Gestión de Patrimonio y Entretenimiento</p>
             </div>
             
-            <div class="music-card p-3 rounded-lg border border-slate-700 flex flex-col items-center shadow-inner">
-                <span class="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-bold">Hilo Musical (1-6)</span>
-                <div class="flex items-center gap-3">
-                    <audio id="player" class="h-8 w-48 rounded"></audio>
-                    <select id="playlist" onchange="changeTrack()" class="bg-slate-800 text-white text-xs border border-slate-600 rounded p-1 outline-none">
-                        <option value="1.mp3">Pista 1</option>
-                        <option value="2.mp3">Pista 2</option>
-                        <option value="3.mp3">Pista 3</option>
-                        <option value="4.mp3">Pista 4</option>
-                        <option value="5.mp3">Pista 5</option>
-                        <option value="6.mp3">Pista 6</option>
+            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-600 flex flex-col items-center">
+                <span class="text-[10px] uppercase tracking-widest text-blue-400 mb-2 font-black text-center">Hilo Musical (Pistas 1-6)</span>
+                <div class="flex items-center gap-4">
+                    <select id="playlist" onchange="changeTrack()" class="bg-slate-900 text-white text-xs border border-slate-500 rounded-lg p-2 outline-none">
+                        <option value="1.mp3">Pista 01</option>
+                        <option value="2.mp3">Pista 02</option>
+                        <option value="3.mp3">Pista 03</option>
+                        <option value="4.mp3">Pista 04</option>
+                        <option value="5.mp3">Pista 05</option>
+                        <option value="6.mp3">Pista 06</option>
                     </select>
-                    <button onclick="togglePlay()" id="playBtn" class="bg-blue-600 hover:bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all">
-                        ▶
-                    </button>
+                    <button onclick="togglePlay()" id="playBtn" class="bg-blue-600 hover:bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all shadow-md">▶</button>
+                    <audio id="mainPlayer" onended="nextTrack()"></audio>
                 </div>
             </div>
         </header>
 
-        <div class="bg-white border-b flex shadow-sm">
-            <button onclick="changeTab('simulador')" id="btn-simulador" class="px-8 py-4 text-slate-500 hover:text-slate-800 transition active-tab">Simulador</button>
-            <button onclick="changeTab('tablas')" id="btn-tablas" class="px-8 py-4 text-slate-500 hover:text-slate-800 transition">Normativa</button>
-        </div>
+        <nav class="bg-white flex shadow-sm border-b">
+            <button onclick="changeTab('simulador')" id="btn-simulador" class="flex-1 py-4 text-slate-500 active-tab">SIMULADOR</button>
+            <button onclick="changeTab('tablas')" id="btn-tablas" class="flex-1 py-4 text-slate-500">NORMATIVA</button>
+            <button onclick="changeTab('juego')" id="btn-juego" class="flex-1 py-4 text-slate-500">JUEGO: ADIVINANZA</button>
+        </nav>
 
-        <main class="bg-white p-6 rounded-b-xl shadow-lg">
+        <main class="bg-white p-6 rounded-b-xl shadow-xl min-h-[500px]">
             
             <div id="simulador" class="tab-content active">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
-                        <h2 class="font-bold text-slate-700 uppercase text-xs tracking-wider mb-4">Entrada de Datos</h2>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Comunidad Autónoma</label>
-                            <select id="ccaa" class="w-full border-2 p-2 rounded-lg focus:border-slate-900 outline-none">
-                                <option value="Cataluña">Cataluña</option>
-                                <option value="Madrid">Madrid</option>
-                                <option value="Andalucía">Andalucía</option>
-                                <option value="C. Valenciana">C. Valenciana</option>
-                                <option value="Aragón">Aragón</option>
-                                <option value="Resto España">Resto España</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Vivienda Habitual (€)</label>
-                            <input type="number" id="viv" value="0" class="w-full border-2 p-2 rounded-lg">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Otros Bienes (€)</label>
-                            <input type="number" id="bien" value="0" class="w-full border-2 p-2 rounded-lg">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Deudas (€)</label>
-                            <input type="number" id="deu" value="0" class="w-full border-2 p-2 rounded-lg">
-                        </div>
-
-                        <button onclick="calcularTodo()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95">
-                            CALCULAR Y GENERAR INFORME
-                        </button>
+                    <div class="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <h2 class="text-slate-800 font-bold text-sm uppercase">Datos de Patrimonio</h2>
+                        <select id="ccaa" class="w-full border-2 p-3 rounded-xl focus:border-blue-500 outline-none"><option value="Cataluña">Cataluña</option><option value="Madrid">Madrid</option><option value="Andalucía">Andalucía</option><option value="C. Valenciana">C. Valenciana</option><option value="Aragón">Aragón</option><option value="Resto España">Resto España</option></select>
+                        <input type="number" id="viv" placeholder="Vivienda Habitual (€)" class="w-full border-2 p-3 rounded-xl">
+                        <input type="number" id="bien" placeholder="Otros Bienes (€)" class="w-full border-2 p-3 rounded-xl">
+                        <input type="number" id="deu" placeholder="Deudas (€)" class="w-full border-2 p-3 rounded-xl">
+                        <button onclick="calcularTodo()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg uppercase text-sm">Calcular Liquidación</button>
                     </div>
-
-                    <div class="flex flex-col h-full">
-                        <div id="area-pdf" class="bg-slate-900 text-green-400 p-6 rounded-xl font-mono text-[11px] shadow-inner flex-grow overflow-auto min-h-[350px]">
-                            <div id="resultado-texto">Esperando ejecución...</div>
+                    <div class="flex flex-col">
+                        <div id="area-pdf" class="bg-slate-900 text-green-400 p-6 rounded-2xl font-mono text-[11px] shadow-2xl flex-grow overflow-auto min-h-[300px]">
+                            <div id="resultado-texto">Esperando datos...</div>
                         </div>
-                        <button id="btn-descarga" onclick="generarPDF()" class="hidden mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                            <span>📄</span> DESCARGAR PDF
-                        </button>
+                        <button id="btn-descarga" onclick="generarPDF()" class="hidden mt-4 bg-emerald-600 text-white font-bold py-3 rounded-xl transition shadow-lg">📄 Descargar PDF</button>
                     </div>
                 </div>
             </div>
 
             <div id="tablas" class="tab-content">
-                <div class="bg-slate-50 p-6 rounded-xl border">
-                    <h2 class="font-bold text-slate-800 mb-4">Escalas y Tipos Aplicados</h2>
-                    <pre id="info-normativa" class="text-xs text-slate-600 font-mono whitespace-pre-wrap"></pre>
+                <pre id="info-normativa" class="text-[11px] text-slate-600 font-mono bg-slate-50 p-6 rounded-xl border border-dashed"></pre>
+            </div>
+
+            <div id="juego" class="tab-content">
+                <div class="max-w-md mx-auto text-center space-y-6 bg-slate-50 p-8 rounded-3xl border-2 border-slate-200 shadow-inner">
+                    <h2 class="text-2xl font-black text-slate-800">¿Cuál es el número secreto?</h2>
+                    <p class="text-slate-500 text-sm">He pensado un número del 1 al 100...</p>
+                    
+                    <div id="feedback-juego" class="text-lg font-bold text-blue-600 h-8">¡Suerte!</div>
+                    
+                    <input type="number" id="input-numero" class="w-full text-center text-3xl font-bold p-4 rounded-2xl border-4 border-slate-300 focus:border-blue-500 outline-none" placeholder="?">
+                    
+                    <button onclick="comprobarAdivinanza()" class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition transform active:scale-95 uppercase">
+                        ADIVINAR
+                    </button>
+
+                    <div class="text-left bg-white p-4 rounded-xl border">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-2">Historial de Intentos:</h3>
+                        <div id="historial-juego" class="text-sm font-mono text-slate-600 h-32 overflow-y-auto"></div>
+                    </div>
+                    
+                    <button onclick="reiniciarJuego()" class="text-xs text-slate-400 underline hover:text-slate-600">Reiniciar juego</button>
                 </div>
             </div>
 
@@ -107,116 +95,66 @@
     </div>
 
     <script>
-        // --- LÓGICA DE AUDIO ---
-        const player = document.getElementById('player');
+        // --- JUEGO DE ADIVINANZA (Lógica de tu código integrada) ---
+        let numeroSecreto = Math.floor(Math.random() * 100) + 1;
+        let intentos = 0;
+
+        function comprobarAdivinanza() {
+            const input = document.getElementById('input-numero');
+            const num = parseInt(input.value);
+            const feedback = document.getElementById('feedback-juego');
+            const historial = document.getElementById('historial-juego');
+
+            if (isNaN(num)) return;
+
+            intentos++;
+            let mensaje = "";
+            let color = "text-blue-600";
+
+            if (num < numeroSecreto) {
+                mensaje = "ES MÁS GRANDE ↑";
+                color = "text-orange-500";
+            } else if (num > numeroSecreto) {
+                mensaje = "ES MÁS PEQUEÑO ↓";
+                color = "text-purple-500";
+            } else {
+                mensaje = "¡CONSEGUIDO! 🏆";
+                color = "text-green-600";
+                alert("¡YOU WIN!\nNúmero: " + numeroSecreto + "\nIntentos: " + intentos);
+                reiniciarJuego();
+            }
+
+            feedback.innerText = mensaje;
+            feedback.className = `text-lg font-bold ${color}`;
+            historial.innerHTML = `<div>INTENTO ${intentos}: ${num} (${mensaje})</div>` + historial.innerHTML;
+            input.value = "";
+            input.focus();
+        }
+
+        function reiniciarJuego() {
+            numeroSecreto = Math.floor(Math.random() * 100) + 1;
+            intentos = 0;
+            document.getElementById('historial-juego').innerHTML = "";
+            document.getElementById('feedback-juego').innerText = "¡Nuevo número generado!";
+            document.getElementById('feedback-juego').className = "text-lg font-bold text-blue-600";
+        }
+
+        // --- LÓGICA DE AUDIO (1-6) ---
+        const audio = document.getElementById('mainPlayer');
         const playlist = document.getElementById('playlist');
         const playBtn = document.getElementById('playBtn');
 
-        function changeTrack() {
-            player.src = playlist.value;
-            player.play();
-            playBtn.innerText = "⏸";
+        function togglePlay() {
+            if (audio.paused) { if(!audio.src) audio.src = playlist.value; audio.play(); playBtn.innerText = "⏸"; }
+            else { audio.pause(); playBtn.innerText = "▶"; }
         }
 
-        function togglePlay() {
-            if (player.paused) {
-                if(!player.src) player.src = playlist.value;
-                player.play();
-                playBtn.innerText = "⏸";
-            } else {
-                player.pause();
-                playBtn.innerText = "▶";
-            }
+        function changeTrack() { audio.src = playlist.value; audio.play(); playBtn.innerText = "⏸"; }
+        function nextTrack() { 
+            let nextIndex = (playlist.selectedIndex + 1) % playlist.options.length;
+            playlist.selectedIndex = nextIndex; 
+            changeTrack(); 
         }
 
         // --- LÓGICA FISCAL ---
-        const ccaa_config = {
-            "Cataluña": [500000, "catalana", 1.0],
-            "Madrid": [700000, "estatal", 0.0],
-            "Andalucía": [700000, "estatal", 0.0],
-            "C. Valenciana": [500000, "estatal", 1.0],
-            "Aragón": [400000, "estatal", 1.0],
-            "Resto España": [700000, "estatal", 1.0]
-        };
-
-        const escalas = {
-            "estatal": [[167129, 0.002], [334252, 0.003], [668499, 0.005], [1336999, 0.009], [2673999, 0.013], [5347998, 0.017], [10695996, 0.021], [Infinity, 0.035]],
-            "catalana": [[167129, 0.0021], [334252, 0.00315], [668499, 0.00525], [1336999, 0.00945], [2673999, 0.01365], [5347998, 0.01785], [10695996, 0.0236], [Infinity, 0.0275]]
-        };
-
-        function changeTab(id) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('button[id^="btn-"]').forEach(el => el.classList.remove('active-tab'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('btn-' + id).classList.add('active-tab');
-        }
-
-        const f = n => n.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " €";
-
-        function calcularCuota(base, tipo) {
-            if (base <= 0) return 0;
-            let cuota = 0, restante = base, anterior = 0;
-            for (let [limite, tasa] of escalas[tipo]) {
-                let tramo = Math.min(restante, limite - anterior);
-                cuota += tramo * tasa;
-                restante -= tramo;
-                anterior = limite;
-                if (restante <= 0) break;
-            }
-            return cuota;
-        }
-
-        function calcularTodo() {
-            try {
-                const v = parseFloat(document.getElementById('viv').value) || 0;
-                const b = parseFloat(document.getElementById('bien').value) || 0;
-                const d = parseFloat(document.getElementById('deu').value) || 0;
-                const ccaaSel = document.getElementById('ccaa').value;
-
-                const pNeto = Math.max(0, (v - Math.min(v, 300000)) + b - d);
-                const [minEx, escTipo, bonif] = ccaa_config[ccaaSel];
-                const baseL = Math.max(0, pNeto - minEx);
-                const cuotaSel = calcularCuota(baseL, escTipo) * bonif;
-
-                let res = `BORRADOR FISCAL 2026 - ${ccaaSel.toUpperCase()}\n`;
-                res += "=".repeat(40) + "\n";
-                res += `Patrimonio Neto:      ${f(pNeto).padStart(15)}\n`;
-                res += `Mínimo Exento:        ${f(minEx).padStart(15)}\n`;
-                res += `Base Liquidable:      ${f(baseL).padStart(15)}\n`;
-                res += `CUOTA TOTAL:          ${f(cuotaSel).padStart(15)}\n`;
-                res += "=".repeat(40) + "\n\n";
-                res += `ESTUDIO POR COMUNIDADES:\n`;
-                res += `${'CCAA'.padEnd(12)} | ${'CUOTA'.padStart(12)} | ${'AHORRO'.padStart(10)}\n`;
-                res += "-".repeat(40) + "\n";
-
-                for (let [nombre, [mEx, esc, bMult]] of Object.entries(ccaa_config)) {
-                    let c = calcularCuota(Math.max(0, pNeto - mEx), esc) * bMult;
-                    let ahorro = Math.max(0, cuotaSel - c);
-                    res += `${nombre.substring(0,11).padEnd(12)} | ${f(c).padStart(12)} | ${f(ahorro).padStart(10)}\n`;
-                }
-
-                document.getElementById('resultado-texto').innerText = res;
-                document.getElementById('btn-descarga').classList.remove('hidden');
-            } catch (e) {
-                alert("Error: " + e);
-            }
-        }
-
-        function generarPDF() {
-            const element = document.getElementById('area-pdf');
-            html2pdf().from(element).save('Informe_Patrimonio_2026.pdf');
-        }
-
-        // Normativa
-        let norm = "";
-        for (let [nombre, escala] of Object.entries(escalas)) {
-            norm += `>> ESCALA ${nombre.toUpperCase()}:\n`;
-            escala.forEach(([lim, tasa]) => {
-                norm += `Hasta ${lim === Infinity ? 'el resto' : f(lim)} -> ${(tasa*100).toFixed(2)}%\n`;
-            });
-            norm += "\n";
-        }
-        document.getElementById('info-normativa').innerText = norm;
-    </script>
-</body>
-</html>
+        const ccaa_config
